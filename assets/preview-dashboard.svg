@@ -1,0 +1,79 @@
+<svg width="720" height="430" viewBox="0 0 720 430" xmlns="http://www.w3.org/2000/svg" font-family="'Cascadia Code','Fira Code','Courier New',monospace">
+  <rect width="720" height="430" rx="10" fill="#0a0a0a"/>
+  <rect width="720" height="48" rx="10" fill="#111"/>
+  <rect y="32" width="720" height="16" fill="#111"/>
+  <text x="20" y="30" fill="#e05c5c" font-size="16" font-weight="bold">◉ PULSE</text>
+  <text x="84" y="30" fill="#555" font-size="12">on-chain whale intelligence</text>
+  <text x="520" y="30" fill="#27c93f" font-size="11">● MONITORING</text>
+  <text x="624" y="30" fill="#555" font-size="11">$100k+ threshold</text>
+
+  <!-- stat cards -->
+  <rect x="16" y="64" width="154" height="68" rx="6" fill="#141414" stroke="#222" stroke-width="1"/>
+  <text x="28" y="82" fill="#555" font-size="10">ALERTS (24H)</text>
+  <text x="28" y="110" fill="#e0e0e0" font-size="28" font-weight="bold">47</text>
+  <text x="28" y="124" fill="#555" font-size="10">3 critical</text>
+
+  <rect x="182" y="64" width="154" height="68" rx="6" fill="#141414" stroke="#222" stroke-width="1"/>
+  <text x="194" y="82" fill="#555" font-size="10">DOMINANT SIGNAL</text>
+  <text x="194" y="110" fill="#e05c5c" font-size="28" font-weight="bold">BEAR</text>
+  <text x="194" y="124" fill="#555" font-size="10">18 bearish / 11 bullish</text>
+
+  <rect x="348" y="64" width="154" height="68" rx="6" fill="#141414" stroke="#222" stroke-width="1"/>
+  <text x="360" y="82" fill="#555" font-size="10">VOLUME TRACKED</text>
+  <text x="360" y="110" fill="#e0e0e0" font-size="22" font-weight="bold">$842M</text>
+  <text x="360" y="124" fill="#555" font-size="10">last 24 hours</text>
+
+  <rect x="514" y="64" width="190" height="68" rx="6" fill="#141414" stroke="#222" stroke-width="1"/>
+  <text x="526" y="82" fill="#555" font-size="10">WATCHLIST</text>
+  <text x="526" y="104" fill="#e0e0e0" font-size="13">SOL · USDC · JTO</text>
+  <text x="526" y="122" fill="#e0e0e0" font-size="13">BONK · WIF</text>
+
+  <!-- live feed -->
+  <text x="20" y="156" fill="#444" font-size="10">LIVE ALERT FEED</text>
+  <rect x="16" y="162" width="688" height="1" fill="#1e1e1e"/>
+
+  <!-- critical alert -->
+  <rect x="16" y="168" width="688" height="38" rx="4" fill="#1a0808"/>
+  <rect x="16" y="168" width="4" height="38" rx="2" fill="#e05c5c"/>
+  <text x="28" y="183" fill="#e05c5c" font-size="10" font-weight="bold">CRITICAL</text>
+  <text x="80" y="183" fill="#aaa" font-size="10">14:22:06</text>
+  <text x="140" y="183" fill="#e0e0e0" font-size="11">Binance Hot Wallet</text>
+  <text x="28" y="198" fill="#e05c5c" font-size="11">→ deposited $12.4M SOL to exchange — likely sell pressure incoming</text>
+  <text x="648" y="190" fill="#e05c5c" font-size="10">bearish 0.94</text>
+
+  <!-- high alert bullish -->
+  <rect x="16" y="210" width="688" height="38" rx="4" fill="#0a1a0a"/>
+  <rect x="16" y="210" width="4" height="38" rx="2" fill="#27c93f"/>
+  <text x="28" y="225" fill="#27c93f" font-size="10" font-weight="bold">HIGH</text>
+  <text x="64" y="225" fill="#aaa" font-size="10">13:58:41</text>
+  <text x="120" y="225" fill="#e0e0e0" font-size="11">Unknown Whale</text>
+  <text x="28" y="240" fill="#27c93f" font-size="11">→ withdrew $3.1M USDC from Binance — accumulation pattern consistent with prior buys</text>
+  <text x="648" y="232" fill="#27c93f" font-size="10">bullish 0.81</text>
+
+  <!-- medium alert neutral -->
+  <rect x="16" y="252" width="688" height="38" rx="4" fill="#111"/>
+  <rect x="16" y="252" width="4" height="38" rx="2" fill="#ffbd2e"/>
+  <text x="28" y="267" fill="#ffbd2e" font-size="10" font-weight="bold">MEDIUM</text>
+  <text x="82" y="267" fill="#aaa" font-size="10">13:44:19</text>
+  <text x="140" y="267" fill="#e0e0e0" font-size="11">Jump Trading</text>
+  <text x="28" y="282" fill="#aaa" font-size="11">→ $850k SOL moved between internal wallets — likely position restructuring, no directional signal</text>
+  <text x="648" y="274" fill="#aaa" font-size="10">neutral 0.72</text>
+
+  <!-- high alert bearish -->
+  <rect x="16" y="294" width="688" height="38" rx="4" fill="#1a0808"/>
+  <rect x="16" y="294" width="4" height="38" rx="2" fill="#e05c5c"/>
+  <text x="28" y="309" fill="#e05c5c" font-size="10" font-weight="bold">HIGH</text>
+  <text x="64" y="309" fill="#aaa" font-size="10">13:31:55</text>
+  <text x="120" y="309" fill="#e0e0e0" font-size="11">Unknown Whale (0x8f2a...)</text>
+  <text x="28" y="324" fill="#e05c5c" font-size="11">→ swapped $2.2M JTO → USDC — exiting JTO position ahead of unlock event</text>
+  <text x="648" y="316" fill="#e05c5c" font-size="10">bearish 0.87</text>
+
+  <!-- intel report -->
+  <rect x="16" y="346" width="688" height="1" fill="#1e1e1e"/>
+  <text x="20" y="365" fill="#555" font-size="10">HOURLY INTEL — 3 CEX deposits totaling $18.4M SOL. Net flow to exchanges bearish. Watch for spot liquidation cascade.</text>
+  <text x="20" y="382" fill="#555" font-size="10">Notable: Jump Trading internal restructuring — historically precedes large directional move within 48h.</text>
+
+  <rect x="0" y="406" width="720" height="24" rx="4" fill="#0a0a0a"/>
+  <text x="20" y="420" fill="#333" font-size="10">scanning every 60s · helius enhanced transactions API</text>
+  <text x="680" y="420" fill="#333" font-size="10">v0.1.0</text>
+</svg>
