@@ -35,6 +35,10 @@ describe("detectRegime", () => {
   it("falls into cooldown on negative flow", () => {
     expect(detectRegime(-0.3, -0.1)).toBe("cooldown");
   });
+
+  it("stays out of bullish when confirmation is still weak", () => {
+    expect(detectRegime(1.2, 0.1)).not.toBe("bullish");
+  });
 });
 
 describe("classifySeverity", () => {
