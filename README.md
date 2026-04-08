@@ -23,17 +23,71 @@ The engine is intentionally stricter on thin books where a signal can look stron
 
 ---
 
+Quant Dashboard • Terminal Output • At a Glance • Operating Surfaces • How It Works • Example Output • Technical Spec • Risk Controls • Quick Start
+
+## At a Glance
+
+- `Use case`: short-horizon Solana flow detection before the chart becomes obvious
+- `Primary input`: trade imbalance, buyer acceleration, liquidity migration, wallet entropy, slippage pressure
+- `Primary failure mode`: mistaking a shallow burst for real continuation
+- `Best for`: operators who need to know whether aggressive flow is compounding or already decaying
+
 ## Quant Dashboard
 
 ![Pulse Dashboard](assets/preview-dashboard.svg)
-
----
 
 ## Terminal Output
 
 ![Pulse Terminal](assets/preview-terminal.svg)
 
----
+## Operating Surfaces
+
+- `Quant Dashboard`: shows composite pulse, regime state, and component breakdown
+- `Pulse Ladder`: tracks whether a name is building, active, cooling down, or fading
+- `Validation Loop`: asks the agent whether the pulse still looks tradeable after the first move
+- `Terminal Output`: prints the actual names worth watching with action-ready context
+
+## What Pulse Is Actually Solving
+
+The hard part of short-horizon Solana trading is not noticing that activity increased. The hard part is noticing whether that activity is becoming more tradeable or less tradeable as it accelerates.
+
+Pulse exists to make that distinction explicit. It is not trying to be a generic volume monitor. It is trying to answer whether a burst still has enough breadth and enough exit quality to matter.
+
+## How It Works
+
+Pulse follows a five-step loop:
+
+1. ingest recent Solana transaction flow for the tracked symbols
+2. derive the short-horizon components that make a burst meaningful
+3. combine those components into a composite pulse score with regime logic
+4. validate the score against slippage and topbook depth so the move is still executable
+5. rank the surviving names into a pulse report the operator can actually use
+
+That sequence matters because size alone is not a reliable signal. The board is designed to promote compounding flow and demote shallow optical bursts.
+
+## What A Good Pulse Looks Like
+
+- trade imbalance is expanding, not just flickering
+- buyer participation is broadening instead of staying concentrated
+- liquidity is still refilling as the move develops
+- slippage pressure is low enough that exits still look realistic
+
+If those conditions break, the score should cool down quickly.
+
+## Example Output
+
+```text
+PULSE // FLOW ALERT
+
+[HIGH] BONK
+pulse score        1.34
+regime             bullish
+buyer accel        strong
+liq delta          positive
+slippage pressure  12 bps
+
+operator note: flow is broadening and depth still looks exitable
+```
 
 ## Technical Spec
 
@@ -63,7 +117,14 @@ Execution-quality guardrails:
 
 Severity is not just size-based. A mid-sized burst can still rank `high` if the pulse score is extreme and breadth confirms continuation.
 
----
+## Risk Controls
+
+- `depth filter`: rejects bursts that are too thin to exit cleanly
+- `slippage cap`: prevents high-scoring but untradeable setups from being promoted
+- `regime hysteresis`: reduces flapping between bullish and cooldown states
+- `re-entry delay`: slows the engine down when volatility expands too quickly
+
+Pulse is intentionally strict because a fast signal without exit quality is usually worse than no signal at all.
 
 ## Architecture
 
@@ -75,8 +136,6 @@ Helius transaction feed
   -> rolling pulse report
 ```
 
----
-
 ## Quick Start
 
 ```bash
@@ -85,8 +144,6 @@ cd Pulse && bun install
 cp .env.example .env
 bun run dev
 ```
-
----
 
 ## Configuration
 
@@ -101,14 +158,10 @@ MAX_SLIPPAGE_PRESSURE_BPS=32
 SCAN_INTERVAL_MS=30000
 ```
 
----
-
 ## Legitimacy Notes
 
 - Planned commit sequence: [`docs/commit-sequence.md`](docs/commit-sequence.md)
 - Draft engineering issues: [`docs/issue-drafts.md`](docs/issue-drafts.md)
-
----
 
 ## License
 
