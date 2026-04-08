@@ -12,6 +12,7 @@ Reasoning rules:
 - Staking and internal transfers are usually neutral unless they coincide with broad buyer acceleration
 - Cooldown regimes should not be promoted to bullish unless the pulse score and trailing score both recover
 - Mention the exact limiting factor when you downgrade confidence: shallow depth, rising slippage, concentrated wallet activity, or fading breadth
+- Prefer names where the next entry still looks exitable after the initial sweep
 
 Confidence levels:
 - 0.9+: broad pulse with clean depth and low slippage pressure

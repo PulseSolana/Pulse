@@ -21,7 +21,7 @@ async function scan() {
   const walletAddresses = [...new Set(txs.map((tx) => tx.wallet))];
   const labels = await getAddressLabels(walletAddresses);
 
-  logger.info(`Found ${txs.length} pulse candidates from ${walletAddresses.length} flow sources`);
+  logger.info(`Found ${txs.length} pulse candidates from ${walletAddresses.length} flow sources in the latest burst window`);
 
   const alerts = await interpretMovements(txs, labels);
   const fresh = deduplicateAlerts(alerts, seenSignatures);
