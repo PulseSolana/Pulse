@@ -10,18 +10,18 @@ const seenSignatures = new Set<string>();
 let lastReportAt = 0;
 
 async function scan() {
-  logger.info("─── Scan ──────────────────────────────────────────");
+  logger.info("---------------- Pulse Scan ----------------");
 
   const txs = await fetchRecentLargeTransactions(config.ALERT_THRESHOLD_USD);
   if (txs.length === 0) {
-    logger.info("No large transactions found this cycle");
+    logger.info("No pulse candidates found this cycle");
     return;
   }
 
-  const walletAddresses = [...new Set(txs.map((t) => t.wallet))];
+  const walletAddresses = [...new Set(txs.map((tx) => tx.wallet))];
   const labels = await getAddressLabels(walletAddresses);
 
-  logger.info(`Found ${txs.length} large transactions from ${walletAddresses.length} wallets`);
+  logger.info(`Found ${txs.length} pulse candidates from ${walletAddresses.length} flow sources`);
 
   const alerts = await interpretMovements(txs, labels);
   const fresh = deduplicateAlerts(alerts, seenSignatures);
@@ -30,20 +30,24 @@ async function scan() {
 
   const stats = getAlertStats();
   logger.info(
-    `Alerts 24h: ${stats.total24h} | critical: ${stats.critical} | bullish: ${stats.bullishSignals} | bearish: ${stats.bearishSignals}`,
+    `Alerts 24h: ${stats.total24h} | critical: ${stats.critical} | bullish: ${stats.bullishSignals} | bearish: ${stats.bearishSignals} | avg pulse: ${stats.avgPulse}`,
   );
 
   if (Date.now() - lastReportAt > config.REPORT_INTERVAL_MS) {
     const report = generateReport();
-    logger.info(`── Intel Report ──────────────────────────────────`);
-    logger.info(`Signal: ${report.dominantSignal.toUpperCase()} | Watchlist: ${report.watchlist.join(", ")}`);
+    logger.info("---------------- Pulse Report --------------");
+    logger.info(
+      `Regime: ${report.dominantRegime.toUpperCase()} | Signal: ${report.dominantSignal.toUpperCase()} | Watchlist: ${report.watchlist.join(", ")}`,
+    );
     lastReportAt = Date.now();
   }
 }
 
 async function main() {
   logger.info("Pulse starting...");
-  logger.info(`Alert threshold: $${config.ALERT_THRESHOLD_USD.toLocaleString()} | Interval: ${config.SCAN_INTERVAL_MS / 1000}s`);
+  logger.info(
+    `Threshold: $${config.ALERT_THRESHOLD_USD.toLocaleString()} | Interval: ${config.SCAN_INTERVAL_MS / 1000}s | bullish pulse >= ${config.BULLISH_PULSE_THRESHOLD}`,
+  );
 
   await scan();
   setInterval(scan, config.SCAN_INTERVAL_MS);

@@ -2,10 +2,10 @@
 
 # Pulse
 
-**On-chain whale intelligence for Solana.**
-Watches every large transaction in real-time. Asks Claude what it means. Tells you whether to follow or fade.
+**Short-horizon order-flow pulse engine for Solana.**
+Scores aggressive flow, buyer breadth, and liquidity migration before a burst becomes obvious on the chart.
 
-[![Build](https://img.shields.io/github/actions/workflow/status/PulseSolana/PulseSolana/ci.yml?branch=main&style=flat-square&label=Build)](https://github.com/PulseSolana/PulseSolana/actions)
+[![Build](https://img.shields.io/github/actions/workflow/status/PulseSolana/Pulse/ci.yml?branch=main&style=flat-square&label=Build)](https://github.com/PulseSolana/Pulse/actions)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 [![Built with Claude Agent SDK](https://img.shields.io/badge/Built%20with-Claude%20Agent%20SDK-cc7800?style=flat-square)](https://docs.anthropic.com/en/docs/agents-and-tools/claude-agent-sdk)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square)](https://www.typescriptlang.org/)
@@ -14,17 +14,15 @@ Watches every large transaction in real-time. Asks Claude what it means. Tells y
 
 ---
 
-Whale alerts without context are noise. A $10M SOL transfer could be a sell, a restake, or an internal wallet shuffle — and they require completely different responses.
+Most Solana scanners tell you that a large trade happened. That is not enough. A real continuation setup depends on whether aggressive flow is broadening across wallets, whether liquidity is being consumed faster than it refills, and whether there is still enough topbook depth to exit without getting trapped.
 
-`Pulse` fetches large on-chain transactions via Helius, matches wallets against known labels (exchanges, market makers, funds), and feeds everything to a Claude agent that reasons about intent. Was that a CEX deposit or a cold wallet sweep? Is the cluster accumulating or distributing? The answer comes with a confidence score and a one-line signal you can act on.
+`Pulse` ingests recent Helius transactions, derives short-horizon flow metrics, and asks a Claude agent to validate whether the current burst looks like a durable momentum pulse or a shallow false break. The output is a pulse-aware alert stream with regime context, confidence, and a watchlist of names where flow is compounding.
 
-```
-DETECT → LABEL → REASON → SIGNAL → REPORT
-```
+`DETECT -> SCORE -> VALIDATE -> REGIME -> REPORT`
 
 ---
 
-## Live Dashboard
+## Quant Dashboard
 
 ![Pulse Dashboard](assets/preview-dashboard.svg)
 
@@ -36,65 +34,53 @@ DETECT → LABEL → REASON → SIGNAL → REPORT
 
 ---
 
+## Technical Spec
+
+Pulse builds a short-horizon composite score from five flow components:
+
+`Pulse_t = 0.30 * z(trade_imbalance_30s) + 0.25 * z(unique_buyers_accel_2m) + 0.20 * z(liquidity_delta_1m) + 0.15 * z(wallet_entropy_5m - 0.5) - 0.10 * z(slippage_pressure_30s)`
+
+Where:
+
+- `trade_imbalance_30s` measures directional aggression in the most recent burst window
+- `unique_buyers_accel_2m` rewards broadening participation instead of one-wallet prints
+- `liquidity_delta_1m` measures how quickly liquidity is disappearing or refilling
+- `wallet_entropy_5m` penalizes overly concentrated flow
+- `slippage_pressure_30s` penalizes setups that look good on paper but are hard to exit cleanly
+
+Regime classification uses hysteresis so Pulse does not flap between states:
+
+- enter `bullish` when `pulseScore >= 1.25` and `trailingPulseScore >= 0.40`
+- remain `bullish` until `pulseScore < 0.60`
+- mark `cooldown` when either pulse or trailing confirmation drops below zero
+
+Execution-quality guardrails:
+
+- reject high-conviction pulses when `topbookDepthUsd < MIN_TOPBOOK_DEPTH_USD`
+- cap conviction when `slippagePressure30s > MAX_SLIPPAGE_PRESSURE_BPS`
+- increase re-entry delay as realized volatility expands relative to `VOLATILITY_BASELINE_BPS`
+
+Severity is not just size-based. A mid-sized burst can still rank `high` if the pulse score is extreme and breadth confirms continuation.
+
+---
+
 ## Architecture
 
+```text
+Helius transaction feed
+  -> flow metric enrichment
+  -> pulse score + regime model
+  -> Claude validation loop
+  -> rolling pulse report
 ```
-┌──────────────────────────────────────────────────────┐
-│                  Helius Watcher                       │
-│   Enhanced TX API · $100k+ filter · Label lookup     │
-└──────────────────────┬───────────────────────────────┘
-                       ▼
-┌──────────────────────────────────────────────────────┐
-│               Classifier                              │
-│   Severity bucketing · Dedup · Wallet grouping       │
-└──────────────────────┬───────────────────────────────┘
-                       ▼
-┌──────────────────────────────────────────────────────┐
-│            Claude Agent Loop                          │
-│   get_recent_movements → get_wallet_profile          │
-│   → get_token_context → submit_alert                 │
-└──────────────────────┬───────────────────────────────┘
-                       ▼
-┌──────────────────────────────────────────────────────┐
-│               Reporter                                │
-│   Alert ingestion · 24h rolling window              │
-│   Hourly intel report · Watchlist generation        │
-└──────────────────────────────────────────────────────┘
-```
-
----
-
-## Alert Severity
-
-| Level | Threshold | Example |
-|-------|-----------|---------|
-| **Critical** | $5M+ | Exchange deposit, fund rebalance |
-| **High** | $1M–$5M | Large swap, whale accumulation |
-| **Medium** | $100k–$1M | Notable movement, watch closely |
-
----
-
-## Signal Interpretation
-
-The Claude agent classifies each movement:
-
-| Pattern | Signal | Reasoning |
-|---------|--------|-----------|
-| CEX deposit (large) | Bearish | Intent to sell |
-| CEX withdrawal (large) | Bullish | Accumulation |
-| Whale → cold wallet | Bullish | Long-term hold |
-| Whale → DEX swap out | Bearish | Exiting position |
-| Internal transfer | Neutral | No directional signal |
-| Staking | Bullish | Long-term conviction |
-| Unstaking | Watch | Potential sell incoming |
 
 ---
 
 ## Quick Start
 
 ```bash
-git clone https://github.com/PulseSolana/PulseSolana
-cd PulseSolana && bun install
+git clone https://github.com/PulseSolana/Pulse
+cd Pulse && bun install
 cp .env.example .env
 bun run dev
 ```
@@ -106,11 +92,20 @@ bun run dev
 ```bash
 ANTHROPIC_API_KEY=sk-ant-...
 HELIUS_API_KEY=...
-ALERT_THRESHOLD_USD=100000
-HIGH_ALERT_THRESHOLD_USD=1000000
-CRITICAL_ALERT_THRESHOLD_USD=5000000
-SCAN_INTERVAL_MS=60000
+SOLANA_RPC_URL=https://mainnet.helius-rpc.com/?api-key=...
+ALERT_THRESHOLD_USD=75000
+BULLISH_PULSE_THRESHOLD=1.25
+MIN_TOPBOOK_DEPTH_USD=25000
+MAX_SLIPPAGE_PRESSURE_BPS=32
+SCAN_INTERVAL_MS=30000
 ```
+
+---
+
+## Legitimacy Notes
+
+- Planned commit sequence: [`docs/commit-sequence.md`](docs/commit-sequence.md)
+- Draft engineering issues: [`docs/issue-drafts.md`](docs/issue-drafts.md)
 
 ---
 
@@ -120,4 +115,4 @@ MIT
 
 ---
 
-*follow the money. read the chain.*
+*catch the burst before the breakout looks obvious.*

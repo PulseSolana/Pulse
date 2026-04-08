@@ -1,7 +1,7 @@
 {
   "name": "pulse",
   "version": "0.1.0",
-  "description": "On-chain whale intelligence for Solana — detects large movements, interprets intent with Claude, surfaces actionable signals",
+  "description": "Short-horizon Solana order-flow pulse engine that scores aggressive flow, buyer breadth, and liquidity migration",
   "type": "module",
   "main": "dist/index.js",
   "scripts": {

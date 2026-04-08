@@ -1,25 +1,25 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { config } from "../lib/config.js";
 import { createLogger } from "../lib/logger.js";
-import type { OnChainTransaction, WhaleAlert, WalletProfile } from "../lib/types.js";
+import type { OnChainTransaction, PulseAlert, FlowSourceProfile } from "../lib/types.js";
 import { PULSE_SYSTEM } from "./prompts.js";
 import { buildRawAlert } from "../analysis/classifier.js";
 
 const logger = createLogger("agent");
 const client = new Anthropic({ apiKey: config.ANTHROPIC_API_KEY });
 
-const walletProfiles = new Map<string, WalletProfile>();
-const interpretedAlerts: WhaleAlert[] = [];
+const flowProfiles = new Map<string, FlowSourceProfile>();
+const interpretedAlerts: PulseAlert[] = [];
 
 const tools: Anthropic.Tool[] = [
   {
     name: "get_recent_movements",
-    description: "Returns the list of large on-chain movements detected this cycle",
+    description: "Returns the list of pulse candidates detected this cycle with flow metrics",
     input_schema: { type: "object" as const, properties: {}, required: [] },
   },
   {
     name: "get_wallet_profile",
-    description: "Returns known info about a wallet address — label, tags, historical behavior",
+    description: "Returns known info about a source wallet or venue tag",
     input_schema: {
       type: "object" as const,
       properties: { address: { type: "string" } },
@@ -28,7 +28,7 @@ const tools: Anthropic.Tool[] = [
   },
   {
     name: "get_token_context",
-    description: "Returns basic context for a token — symbol, market cap, recent price action",
+    description: "Returns token context for short-horizon pulse validation",
     input_schema: {
       type: "object" as const,
       properties: { mint: { type: "string" } },
@@ -37,7 +37,7 @@ const tools: Anthropic.Tool[] = [
   },
   {
     name: "submit_alert",
-    description: "Submit a fully interpreted whale alert",
+    description: "Submit a fully interpreted pulse alert",
     input_schema: {
       type: "object" as const,
       properties: {
@@ -54,7 +54,7 @@ const tools: Anthropic.Tool[] = [
 export async function interpretMovements(
   transactions: OnChainTransaction[],
   labels: Record<string, string>,
-): Promise<WhaleAlert[]> {
+): Promise<PulseAlert[]> {
   if (transactions.length === 0) return [];
 
   interpretedAlerts.length = 0;
@@ -63,7 +63,7 @@ export async function interpretMovements(
   const messages: Anthropic.MessageParam[] = [
     {
       role: "user",
-      content: `${transactions.length} large on-chain movements detected. Analyze each one and submit interpreted alerts for movements with confidence >= 0.5. Skip noise.`,
+      content: `${transactions.length} Solana pulse candidates detected. Validate which ones represent actionable short-horizon order-flow and submit alerts with confidence >= 0.5.`,
     },
   ];
 
@@ -88,47 +88,63 @@ export async function interpretMovements(
 
       switch (block.name) {
         case "get_recent_movements":
-          result = rawAlerts.map((a) => ({
-            txSignature: a.txSignature,
-            wallet: a.wallet,
-            walletLabel: a.walletLabel ?? "unknown",
-            type: a.type,
-            token: a.tokenSymbol,
-            amountUsd: a.amountUsd,
-            severity: a.severity,
-            timestamp: new Date(a.timestamp).toISOString(),
-          }));
+          result = rawAlerts.map((alert) => {
+            const tx = transactions.find((candidate) => candidate.signature === alert.txSignature);
+            return {
+              txSignature: alert.txSignature,
+              wallet: alert.wallet,
+              walletLabel: alert.walletLabel ?? "unknown",
+              type: alert.type,
+              token: alert.tokenSymbol,
+              amountUsd: alert.amountUsd,
+              severity: alert.severity,
+              regime: alert.regime,
+              pulseScore: alert.pulseScore,
+              trailingPulseScore: alert.trailingPulseScore,
+              topbookDepthUsd: tx?.flowMetrics.topbookDepthUsd,
+              slippagePressureBps: tx?.flowMetrics.slippagePressure30s,
+              timestamp: new Date(alert.timestamp).toISOString(),
+            };
+          });
           break;
 
         case "get_wallet_profile": {
           const input = block.input as { address: string };
-          const profile = walletProfiles.get(input.address);
+          const profile = flowProfiles.get(input.address);
           result = profile ?? {
             address: input.address,
             label: labels[input.address] ?? "unknown",
             tags: [],
-            note: "No historical profile — first time seen or unlabeled wallet",
+            note: "No prior venue profile captured in this session",
           };
           break;
         }
 
-        case "get_token_context": {
-          result = { note: "Token price context not available in current session — reason based on movement patterns" };
+        case "get_token_context":
+          result = {
+            note: "Use pulse score, topbook depth, and slippage pressure as the primary signal context in this session.",
+          };
           break;
-        }
 
         case "submit_alert": {
-          const input = block.input as { txSignature: string; interpretation: string; actionSignal: "bullish" | "bearish" | "neutral"; confidence: number };
-          const raw = rawAlerts.find((a) => a.txSignature === input.txSignature);
+          const input = block.input as {
+            txSignature: string;
+            interpretation: string;
+            actionSignal: "bullish" | "bearish" | "neutral";
+            confidence: number;
+          };
+          const raw = rawAlerts.find((alert) => alert.txSignature === input.txSignature);
           if (raw && input.confidence >= 0.5) {
-            const alert: WhaleAlert = {
+            const alert: PulseAlert = {
               ...raw,
               interpretation: input.interpretation,
               actionSignal: input.actionSignal,
               confidence: input.confidence,
             };
             interpretedAlerts.push(alert);
-            logger.info(`[ALERT] ${alert.severity.toUpperCase()} | ${alert.tokenSymbol} $${alert.amountUsd.toLocaleString()} | ${alert.actionSignal} | ${alert.interpretation}`);
+            logger.info(
+              `[PULSE] ${alert.severity.toUpperCase()} | ${alert.tokenSymbol} $${alert.amountUsd.toLocaleString()} | pulse=${alert.pulseScore.toFixed(2)} | ${alert.actionSignal} | ${alert.interpretation}`,
+            );
           }
           result = { accepted: true };
           break;

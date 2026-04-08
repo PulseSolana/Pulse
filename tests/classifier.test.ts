@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { classifySeverity, buildRawAlert, deduplicateAlerts, groupByWallet } from "../src/analysis/classifier.js";
-import type { OnChainTransaction, WhaleAlert } from "../src/lib/types.js";
+import { classifySeverity, buildRawAlert, calculatePulseScore, deduplicateAlerts, detectRegime, groupByWallet } from "../src/analysis/classifier.js";
+import type { OnChainTransaction, PulseAlert } from "../src/lib/types.js";
 
 const baseTx: OnChainTransaction = {
   signature: "sig1111111111111111111111111111111111111111111",
@@ -11,7 +11,31 @@ const baseTx: OnChainTransaction = {
   amountUsd: 500000,
   timestamp: Date.now(),
   slot: 300000000,
+  flowMetrics: {
+    tradeImbalance30s: 0.9,
+    uniqueBuyersAccel2m: 0.8,
+    liquidityDelta1m: -0.3,
+    walletEntropy5m: 0.76,
+    slippagePressure30s: 12,
+    topbookDepthUsd: 180000,
+  },
 };
+
+describe("calculatePulseScore", () => {
+  it("rewards broad positive flow with manageable slippage", () => {
+    expect(calculatePulseScore(baseTx.flowMetrics)).toBeGreaterThan(0.5);
+  });
+});
+
+describe("detectRegime", () => {
+  it("enters bullish when pulse and trailing score confirm", () => {
+    expect(detectRegime(1.4, 0.5)).toBe("bullish");
+  });
+
+  it("falls into cooldown on negative flow", () => {
+    expect(detectRegime(-0.3, -0.1)).toBe("cooldown");
+  });
+});
 
 describe("classifySeverity", () => {
   it("returns medium for $100k-$999k", () => {
@@ -29,16 +53,21 @@ describe("classifySeverity", () => {
   it("returns low for sub-threshold", () => {
     expect(classifySeverity(50_000)).toBe("low");
   });
+
+  it("upgrades severity when pulse is unusually strong", () => {
+    expect(classifySeverity(250_000, 1.5)).toBe("high");
+  });
 });
 
 describe("buildRawAlert", () => {
-  it("builds alert with correct severity from tx", () => {
-    const alert = buildRawAlert(baseTx, "Test Whale");
+  it("builds alert with pulse metadata from tx", () => {
+    const alert = buildRawAlert(baseTx, "Test Venue");
     expect(alert.severity).toBe("medium");
-    expect(alert.walletLabel).toBe("Test Whale");
+    expect(alert.walletLabel).toBe("Test Venue");
     expect(alert.tokenSymbol).toBe("USDC");
     expect(alert.amountUsd).toBe(500000);
     expect(alert.txSignature).toBe(baseTx.signature);
+    expect(alert.pulseScore).toBeGreaterThan(0);
   });
 
   it("sets neutral defaults for uninterpreted alert", () => {
@@ -52,13 +81,13 @@ describe("buildRawAlert", () => {
 describe("deduplicateAlerts", () => {
   it("filters out already-seen signatures", () => {
     const seen = new Set<string>(["sig1111111111111111111111111111111111111111111"]);
-    const alerts: WhaleAlert[] = [{ ...buildRawAlert(baseTx), id: "1" }];
+    const alerts: PulseAlert[] = [{ ...buildRawAlert(baseTx), id: "1" }];
     expect(deduplicateAlerts(alerts, seen)).toHaveLength(0);
   });
 
   it("passes through new signatures", () => {
     const seen = new Set<string>();
-    const alerts: WhaleAlert[] = [{ ...buildRawAlert(baseTx), id: "1" }];
+    const alerts: PulseAlert[] = [{ ...buildRawAlert(baseTx), id: "1" }];
     expect(deduplicateAlerts(alerts, seen)).toHaveLength(1);
   });
 });

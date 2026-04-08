@@ -1,13 +1,23 @@
 export type AlertSeverity = "low" | "medium" | "high" | "critical";
 export type MovementType = "accumulation" | "distribution" | "transfer" | "swap" | "stake" | "unstake";
+export type PulseRegime = "bullish" | "neutral" | "cooldown";
 
-export interface WalletProfile {
+export interface FlowSourceProfile {
   address: string;
-  label?: string;                // e.g. "Binance Hot Wallet", "Jump Trading"
-  tags: string[];               // ["cex", "mm", "whale", "dev"]
+  label?: string;
+  tags: string[];
   firstSeen: number;
   totalVolumeUsd: number;
   alertCount: number;
+}
+
+export interface FlowMetrics {
+  tradeImbalance30s: number;
+  uniqueBuyersAccel2m: number;
+  liquidityDelta1m: number;
+  walletEntropy5m: number;
+  slippagePressure30s: number;
+  topbookDepthUsd: number;
 }
 
 export interface OnChainTransaction {
@@ -20,37 +30,42 @@ export interface OnChainTransaction {
   timestamp: number;
   slot: number;
   counterparty?: string;
+  flowMetrics: FlowMetrics;
 }
 
-export interface WhaleAlert {
+export interface PulseAlert {
   id: string;
   severity: AlertSeverity;
+  regime: PulseRegime;
   type: MovementType;
   wallet: string;
   walletLabel?: string;
   tokenSymbol: string;
   amountUsd: number;
-  interpretation: string;       // Claude's reasoning
+  pulseScore: number;
+  trailingPulseScore: number;
+  interpretation: string;
   actionSignal: "bullish" | "bearish" | "neutral";
   confidence: number;
   timestamp: number;
   txSignature: string;
 }
 
-export interface WalletCluster {
+export interface MarketPulseCluster {
   id: string;
   wallets: string[];
   label: string;
   totalVolumeUsd24h: number;
-  netFlowUsd24h: number;        // positive = accumulating
+  netFlowUsd24h: number;
   dominantBehavior: MovementType;
 }
 
-export interface MarketIntelReport {
+export interface PulseReport {
   generatedAt: number;
   alertsAnalyzed: number;
+  dominantRegime: PulseRegime;
   dominantSignal: "bullish" | "bearish" | "neutral" | "mixed";
-  keyMovements: WhaleAlert[];
+  keyMovements: PulseAlert[];
   summary: string;
-  watchlist: string[];          // tokens to watch
+  watchlist: string[];
 }
