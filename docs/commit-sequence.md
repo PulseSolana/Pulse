@@ -10,3 +10,5 @@
 8. `docs(readme): rewrite README around short-horizon order-flow logic`
 9. `design(assets): replace whale dashboard with quantitative pulse visuals`
 10. `chore(copy): tighten env defaults and repo metadata around pulse semantics`
+
+Operational note: split future changes by flow model, prompt logic, and board polish so the repo history reads like actual iteration.

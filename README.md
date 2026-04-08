@@ -17,6 +17,7 @@ Scores aggressive flow, buyer breadth, and liquidity migration before a burst be
 Most Solana scanners tell you that a large trade happened. That is not enough. A real continuation setup depends on whether aggressive flow is broadening across wallets, whether liquidity is being consumed faster than it refills, and whether there is still enough topbook depth to exit without getting trapped.
 
 `Pulse` ingests recent Helius transactions, derives short-horizon flow metrics, and asks a Claude agent to validate whether the current burst looks like a durable momentum pulse or a shallow false break. The output is a pulse-aware alert stream with regime context, confidence, and a watchlist of names where flow is compounding.
+The engine is intentionally stricter on thin books where a signal can look strong but still be hard to exit.
 
 `DETECT -> SCORE -> VALIDATE -> REGIME -> REPORT`
 

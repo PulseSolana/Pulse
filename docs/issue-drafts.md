@@ -7,3 +7,5 @@ The current burst detector can still overrate a move when one wallet fans out or
 ## Need depth-aware decay after the first impulse leg
 
 We hold bullish regime too long when the first burst prints cleanly but refill depth disappears two scans later. Add a decay term tied to `topbookDepthUsd / amountUsd`.
+
+Backlog note: replay both issues on BONK and WIF burst days before changing production thresholds.
