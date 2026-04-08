@@ -1,6 +1,6 @@
 {
   "name": "pulse",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Short-horizon Solana order-flow pulse engine that scores aggressive flow, buyer breadth, and liquidity migration",
   "type": "module",
   "main": "dist/index.js",
@@ -15,6 +15,12 @@
     "@anthropic-ai/sdk": "^0.39.0",
     "zod": "^3.23.0"
   },
+  "keywords": [
+    "solana",
+    "order-flow",
+    "pulse",
+    "momentum"
+  ],
   "devDependencies": {
     "@types/node": "^22.0.0",
     "tsup": "^8.0.0",
