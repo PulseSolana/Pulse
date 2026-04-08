@@ -6,7 +6,7 @@
 Scores aggressive flow, buyer breadth, and liquidity migration before a burst becomes obvious on the chart.
 
 [![Build](https://img.shields.io/github/actions/workflow/status/PulseSolana/Pulse/ci.yml?branch=main&style=flat-square&label=Build)](https://github.com/PulseSolana/Pulse/actions)
-![License](https://img.shields.io/badge/license-MIT-blue)
+![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)
 [![Built with Claude Agent SDK](https://img.shields.io/badge/Built%20with-Claude%20Agent%20SDK-cc7800?style=flat-square)](https://docs.anthropic.com/en/docs/agents-and-tools/claude-agent-sdk)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square)](https://www.typescriptlang.org/)
 
@@ -162,6 +162,13 @@ SCAN_INTERVAL_MS=30000
 
 - Planned commit sequence: [`docs/commit-sequence.md`](docs/commit-sequence.md)
 - Draft engineering issues: [`docs/issue-drafts.md`](docs/issue-drafts.md)
+
+## Support Docs
+
+- [Runbook](docs/runbook.md)
+- [Changelog](CHANGELOG.md)
+- [Contributing](CONTRIBUTING.md)
+- [Security](SECURITY.md)
 
 ## License
 
