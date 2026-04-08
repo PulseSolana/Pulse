@@ -53,7 +53,10 @@
 
   <rect x="604" y="450" width="520" height="188" rx="22" fill="#101d2b" stroke="#29445e"/>
   <text x="630" y="484" fill="#c8d9e8" font-size="18" font-family="Arial">Cycle Log</text>
-  <text x="630" y="524" fill="#49d0c2" font-size="15" font-family="Arial">09:14:02  BONK pulse promoted to bullish after breadth confirmed</text>
-  <text x="630" y="556" fill="#f4c15d" font-size="15" font-family="Arial">09:14:16  WIF burst kept neutral because topbook depth fell below exit guard</text>
-  <text x="630" y="588" fill="#84b8ff" font-size="15" font-family="Arial">09:14:31  SOL impulse in cooldown while slippage pressure expanded to 28 bps</text>
+  <text x="630" y="520" fill="#49d0c2" font-size="14" font-family="Arial">09:14:02  BONK pulse upgraded to bullish</text>
+  <text x="630" y="542" fill="#7e97af" font-size="13" font-family="Arial">buyer breadth confirmed the move</text>
+  <text x="630" y="570" fill="#f4c15d" font-size="14" font-family="Arial">09:14:16  WIF stayed neutral</text>
+  <text x="630" y="592" fill="#7e97af" font-size="13" font-family="Arial">depth slipped below the exit guard</text>
+  <text x="630" y="620" fill="#84b8ff" font-size="14" font-family="Arial">09:14:31  SOL entered cooldown</text>
+  <text x="630" y="634" fill="#7e97af" font-size="13" font-family="Arial">slippage pressure widened to 28 bps</text>
 </svg>
