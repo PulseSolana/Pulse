@@ -4,6 +4,7 @@ const schema = z.object({
   ANTHROPIC_API_KEY: z.string().min(1),
   HELIUS_API_KEY: z.string().min(1),
   SOLANA_RPC_URL: z.string().url(),
+  JUPITER_PRICE_API: z.string().url().default("https://api.jup.ag/price/v2"),
   CLAUDE_MODEL: z.string().default("claude-sonnet-4-5-20251001"),
   SCAN_INTERVAL_MS: z.coerce.number().default(30_000),
   ALERT_THRESHOLD_USD: z.coerce.number().default(75_000),

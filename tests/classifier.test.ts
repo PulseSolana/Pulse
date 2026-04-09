@@ -8,7 +8,9 @@ const baseTx: OnChainTransaction = {
   type: "transfer",
   tokenMint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
   tokenSymbol: "USDC",
+  amountRaw: 500000,
   amountUsd: 500000,
+  pricingSource: "stablecoin-par",
   timestamp: Date.now(),
   slot: 300000000,
   flowMetrics: {
@@ -18,6 +20,8 @@ const baseTx: OnChainTransaction = {
     walletEntropy5m: 0.76,
     slippagePressure30s: 12,
     topbookDepthUsd: 180000,
+    provenance: "proxy",
+    confidence: 0.82,
   },
 };
 

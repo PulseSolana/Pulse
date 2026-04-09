@@ -18,6 +18,8 @@ export interface FlowMetrics {
   walletEntropy5m: number;
   slippagePressure30s: number;
   topbookDepthUsd: number;
+  provenance: "proxy";
+  confidence: number;
 }
 
 export interface OnChainTransaction {
@@ -26,7 +28,9 @@ export interface OnChainTransaction {
   type: MovementType;
   tokenMint: string;
   tokenSymbol: string;
+  amountRaw: number;
   amountUsd: number;
+  pricingSource: "stablecoin-par" | "jupiter" | "native_spot";
   timestamp: number;
   slot: number;
   counterparty?: string;
