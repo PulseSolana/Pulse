@@ -23,7 +23,7 @@ The engine is intentionally stricter on thin books where a signal can look stron
 
 ---
 
-Quant Dashboard • Terminal Output • At a Glance • Operating Surfaces • How It Works • Example Output • Technical Spec • Risk Controls • Quick Start
+Quant Dashboard • Validation Flow • At a Glance • Operating Surfaces • How It Works • Example Output • Technical Spec • Risk Controls • Quick Start
 
 ## At a Glance
 
@@ -34,18 +34,22 @@ Quant Dashboard • Terminal Output • At a Glance • Operating Surfaces • H
 
 ## Quant Dashboard
 
-![Pulse Dashboard](assets/preview-dashboard.svg)
+<img src="assets/preview-dashboard.png" alt="Pulse quant dashboard" width="100%" />
 
-## Terminal Output
+Live order-flow board for Pulse: composite pulse score, regime state, flow components, token watchlist, alert severity, and Claude's validation notes for each short-horizon setup.
 
-![Pulse Terminal](assets/preview-terminal.svg)
+## Validation Flow
+
+<img src="assets/preview-validation.png" alt="Pulse validation flow" width="100%" />
+
+How Pulse validates a burst: Helius transactions become flow components, the pulse score is checked against topbook depth and slippage pressure, and only durable setups reach the bullish pulse report.
 
 ## Operating Surfaces
 
 - `Quant Dashboard`: shows composite pulse, regime state, and component breakdown
 - `Pulse Ladder`: tracks whether a name is building, active, cooling down, or fading
 - `Validation Loop`: asks the agent whether the pulse still looks tradeable after the first move
-- `Terminal Output`: prints the actual names worth watching with action-ready context
+- `Validation Flow`: shows how raw flow becomes a durable or rejected pulse signal
 
 ## What Pulse Is Actually Solving
 
