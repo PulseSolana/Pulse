@@ -1,8 +1,8 @@
 {
   "name": "pulse",
   "version": "0.1.1",
-  "description": "Short-horizon order-flow pulse engine for Robinhood crypto that scores aggressive flow, buyer breadth, and liquidity migration",
-  "homepage": "https://pulsesolana-launch.vercel.app/",
+  "description": "Short-horizon Solana order-flow pulse engine that scores aggressive flow, buyer breadth, and liquidity migration",
+  "homepage": "https://pulseflowx.com/",
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
@@ -17,7 +17,7 @@
     "zod": "^3.23.0"
   },
   "keywords": [
-    "robinhood",
+    "solana",
     "order-flow",
     "pulse",
     "momentum"

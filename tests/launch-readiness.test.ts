@@ -6,14 +6,16 @@ const packageJson = JSON.parse(
   readFileSync(new URL("../package.json", import.meta.url), "utf8"),
 ) as { description?: string; homepage?: string; keywords?: string[] };
 
-describe("Robinhood launch presentation", () => {
-  it("positions Pulse for Robinhood crypto without changing runtime code", () => {
-    expect(readme).toContain("order-flow pulse engine for Robinhood crypto");
-    expect(readme).toContain("[Website](https://pulsesolana-launch.vercel.app/)");
-    expect(packageJson.description).toContain("Robinhood crypto");
-    expect(packageJson.homepage).toBe("https://pulsesolana-launch.vercel.app/");
-    expect(packageJson.keywords).toContain("robinhood");
-    expect(packageJson.keywords).not.toContain("solana");
-    expect(readme).not.toMatch(/\b(?:Solana|Helius)\b/i);
+describe("Solana launch presentation", () => {
+  it("restores Pulse's native Solana product and Pump.fun launch positioning", () => {
+    expect(readme).toContain("order-flow pulse engine for Solana");
+    expect(readme).toContain("[Website](https://pulseflowx.com/)");
+    expect(readme).toContain("Solana token launching through [Pump.fun]");
+    expect(readme).toContain("https://github.com/PulseRobinhood/Pulse");
+    expect(packageJson.description).toContain("Solana order-flow pulse engine");
+    expect(packageJson.homepage).toBe("https://pulseflowx.com/");
+    expect(packageJson.keywords).toContain("solana");
+    expect(packageJson.keywords).not.toContain("robinhood");
+    expect(readme).not.toMatch(/\bRobinhood\b|pons\.family|vercel\.app/i);
   });
 });
